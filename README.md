@@ -11,7 +11,7 @@ Utility scripts to use in KDB processes
 
 i) Loading of all functions defined within the q instance
 ```
-.qutils.display_all_fns[<boolean - 1b for regeneration, 0b for as it is>; 
+.qutils.displayAllFns[<boolean - 1b for regeneration, 0b for as it is>; 
 <boolean - 1b for beautified format, 0b for standard format>]
 ```
 `Example:` .qutils.displayAllFns[1b;1b]
@@ -26,7 +26,7 @@ ii) Loading of all tables defined within the q instance
 
 iii) Tracing of single function dependency trees
 ```
-.qutils.elicit_dependency_tree[<boolean - 1b for FD's DC for Kx process, 0b for native q process>; 
+.qutils.elicitDependencyTree[<boolean - 1b for FD's DC for Kx process, 0b for native q process>; 
 <boolean - 1b for specific filters appended to function search, 0b for none>; 
 <symbol - analytic to search tree for>]
 ```
@@ -36,7 +36,7 @@ iii) Tracing of single function dependency trees
 
 iv) Tracing of multiple function dependency trees
 ```
-.qutils.elicit_dependency_tree[<boolean - 1b for FD's DC for Kx process, 0b for native q process>; 
+.qutils.elicitMultiDependencyTrees[<boolean - 1b for FD's DC for Kx process, 0b for native q process>; 
 <boolean - 1b for specific filters appended to function search, 0b for none>; 
 <list of symbols - analytics to search tree for>]
 ```
