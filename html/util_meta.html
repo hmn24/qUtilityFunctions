@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<!-- Template by quackit.com -->
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <title>Meta Info</title>
+        <link rel="stylesheet" href="css/style.css">
+        <style type="text/css">
+        
+        main {
+            position: fixed;
+            top: 55px; /* Set this to the height of the header */
+            left: 200px; 
+            right: 0;
+            bottom: 0;
+            overflow: auto; 
+            background: beige;
+        }   
+
+        #csvExportButton {
+            background-color: #BCCE98;
+            border: none;
+            color: beige;
+            padding: 5px;
+            text-align: center;
+            font-size: 14px;
+            font-family: Calibri, Helvetica, sans-serif;
+            border-radius: 12px;
+            cursor: pointer;
+            width: 25%;
+            margin-top: 0.25%;
+            margin-left: 0.5%;
+            outline: none;
+        }            
+
+        #nav {
+            position: absolute; 
+            top: 55px; 
+            left: 0; 
+            bottom: 0;
+            width: 200px;
+            overflow: auto; 
+            background: #DAE9BC;        
+        }
+        
+        nav ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            font-size: 18px;
+            padding:1%;
+            align-content:center;
+            font-family: Calibri, Helvetica, sans-serif;
+            margin-top: -1%;
+            margin-left: 30%;
+        }
+        
+        button.active {
+            background-color: #BCCE98;
+            border: none;
+            color: beige;
+            padding: 6px;
+            text-align: center;
+            margin-top: 2%;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            font-family: Calibri, Helvetica, sans-serif;
+            border-radius: 12px;
+            cursor: pointer;
+            width: 95%;
+            outline:none;
+        }
+        
+        </style>
+        
+        <script src="js/script.js"></script>
+
+    </head>
+    
+    <body>     
+        <header id="header">
+            <div id="logo">
+                <a class="active" href="">Meta Info</a>
+                <a href="util_depTree.html">Tree Search</a>  <!--To add the analytics HTML page that does the dependency tree search-->
+            </div>
+        </header>
+
+        <main>
+            <div class="innertube">
+                <button id="csvExportButton" onclick="exportTableToCSV('output.csv')">Export as CSV</button>
+                <p id="txtOutput"></p>
+            </div>
+        </main>
+
+        <nav id="nav">
+            <div class="innertube">
+                <h1>Tables</h1> 
+                <ul id="txtInput"></ul>
+            </div>
+        </nav>  
+    </body>
+    
+    <script>
+        var ws = ""; 
+        var input = document.getElementById("txtInput");    
+        var output = document.getElementById("txtOutput");   
+        
+        connect();
+
+        ws.addEventListener('open', function (event) {
+            ws.send('raze .util.createHTMLStruct each string key .util.getTabMeta[]');
+        });    
+
+    </script>   
+
+</html>

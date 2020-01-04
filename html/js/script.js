@@ -8,11 +8,11 @@ function search(){
 	searchBar = '\"' + searchBar + '\"';
 
 	/* 1st Message to create the tables of dependency trees */
-	if (2 == searchBar.length) {ws.send('.qutils.displayAllFns[1b;0b]');}
-	else {msg = '.qutils.elicitDependencyTree[0b;1b] `$' + searchBar; ws.send(msg);};
+	if (2 == searchBar.length) {ws.send('.util.getAllFns[]');}
+	else {msg = 'delete Regex from .util.genDepTree[1b;1b] `$' + searchBar; ws.send(msg);};
 	
 	/* 2nd Message to display the function string */
-	msg = '$[(`$' + searchBar + ') in raze value `.qutils.fnDict; string value ' + searchBar + ';""]'; ws.send(msg);
+	msg = '$[(`$' + searchBar + ') in raze flip .util.getAllFns[]; .Q.s1 value ' + searchBar + ';""]'; ws.send(msg);
 
 }
 
