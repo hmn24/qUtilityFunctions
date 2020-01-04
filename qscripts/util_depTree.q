@@ -1,3 +1,8 @@
+/
+    Dependency Tree Utilities 
+	Author: Ng Hai Ming
+\
+
 // Function to convert strings/symbols
 .util.toString: {$[not type x; .z.s each x; 10h = abs type x; x; string x]};
 .util.toSymbol: {$[11h = abs type x; x; `$ .util.toString x]};
