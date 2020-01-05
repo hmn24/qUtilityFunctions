@@ -62,7 +62,7 @@
     regexList, enlist distinct[raze .util.searchRegex[allFns;filterStr;caseFn] peach last regexList] except union/[regexList]
  };
 
-// Check for dependencies for a single regex 
+// Check for dependencies for regex
 .util.genDepTree: {[addFilter;isCase;regex]
     allFns: raze .util.getAllVar[`f];
     caseFn: $[isCase;::;lower];
