@@ -57,7 +57,7 @@
     allFns where "b"$ (count ss[;regexStr] caseFn @ string value ::) peach allFns
  };
 
-// Wrapper for .util.searchRegex to ensure 
+// Wrapper for .util.searchRegex to stack additional layers of dependencies 
 .util.searchRegexWrap: {[allFns;filterStr;caseFn;regexList]
     regexList, enlist distinct[raze .util.searchRegex[allFns;filterStr;caseFn] peach last regexList] except union/[regexList]
  };
