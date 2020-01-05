@@ -47,7 +47,7 @@
  };
 .util.updTabCol: {[tab;regex] $[count tab; `Regex xcols ![tab; (); 0b; enlist[`Regex]!enlist (), regex]; tab]}
 
-// To generate all namespace dictionaries for functions
+// To generate all namespace dictionaries for functions/tables
 .util.getAllFns: {.util.makeEqualLength .util.getAllVar[`f]};
 .util.getAllTabs: {.util.makeEqualLength .util.getAllVar[`a]};
 
