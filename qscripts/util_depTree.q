@@ -75,7 +75,7 @@
 \ 
 Example Usage: 
 1) To get all functions within the `.a namespace
-.util.getVarTypes[`f;`.a] 
+.util.getVarType[`f;`.a] 
 
 2) To get all functions across namespaces in table format
 .util.getAllFns[]
