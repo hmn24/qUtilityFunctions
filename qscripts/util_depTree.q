@@ -3,13 +3,6 @@
     Author: Ng Hai Ming
 \
 
-// Function to convert strings/symbols
-.util.toString: {$[not type x; .z.s each x; 10h = abs type x; x; string x]};
-.util.toSymbol: {$[11h = abs type x; x; `$ .util.toString x]};
-
-// Run system commands, e.g. .util.sys[`f;`.a]
-.util.sys: {@[system; raze .util.toString (x;" ";y); ()]};
-
 // Get base namespaces
 .util.baseNS: {.Q.dd[`;] each key[`] except `q`Q`h`j`o};
 
@@ -23,13 +16,13 @@
 .util.genNSDict: {do[5; x: x, enlist raze .util.getNS peach last x]; x};
 
 // To check the namespace for specific variable types in each individual scan loop
-.util.scanVarType: {y, enlist raze .Q.dd/:'[z; .util.sys[x] peach z]};
+.util.scanVarType: {y, enlist raze .Q.dd/:'[z; .util.sysCmd[x] peach z]};
 
 // Use .util.scanVarTypes to generate a list of depth 5 for a specific variable type
 .util.getVarType: {.util.scanVarType[x]/[(); .util.genNSDict y]};
 
 // Get all variables defined within kdb namespaces
-.util.getAllVar: {
+.util.getAllVars: {
     if[not .util.toSymbol[x] in `f`a`v;  
         '"Only `f`a`v allowed!"
     ];
@@ -48,8 +41,8 @@
 .util.updTabCol: {[tab;regex] $[count tab; `Regex xcols ![tab; (); 0b; enlist[`Regex]!enlist (), regex]; tab]}
 
 // To generate all namespace dictionaries for functions/tables
-.util.getAllFns: {.util.makeEqualLength .util.getAllVar[`f]};
-.util.getAllTabs: {.util.makeEqualLength .util.getAllVar[`a]};
+.util.getAllFns: {.util.makeEqualLength .util.getAllVars[`f]};
+.util.getAllTabs: {.util.makeEqualLength .util.getAllVars[`a]};
 
 // To search the function-string for particular regex match
 .util.searchRegex: {[allFns;filterStr;caseFn;regex]
@@ -64,7 +57,7 @@
 
 // Check for dependencies for regex
 .util.genDepTree: {[addFilter;isCase;regex]
-    allFns: raze .util.getAllVar[`f];
+    allFns: raze .util.getAllVars[`f];
     caseFn: $[isCase;::;lower];
     filterStr: $[addFilter; "[(/[') ;@.]"; ""];
     regex: .util.toSymbol @ regex;
@@ -81,7 +74,7 @@ Example Usage:
 .util.getAllFns[]
 
 3) To get all functions across namespaces in dict format
-.util.getAllVar[`f]
+.util.getAllVars[`f]
 
 4) To get the dependency tree of a particular regex with additional filter and case sensitivity
 .util.genDepTree[1b;1b;`getVarType]

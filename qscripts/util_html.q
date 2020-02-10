@@ -1,66 +1,88 @@
-// Load the script with 
-/ q qutils_others.q -p 5014
-/ This would allow one to view the meta of any tables existing within q in verbose format with the qutils_others.html script
+/
+    HTML/Metadata Utilities 
+    Author: Ng Hai Ming
+\
 
-// Generate the data and attribute types from existing KDB tables in verbose form
-/ This is only for tables in the root namespace (can be combined with qutils_dependencyTree.q in the future, with some modifications, for all tables
-/ This would need to be linked to the use of .util.tabDict
+// Generate metadata in verbose form
 .util.getTabMeta: {
     typeDict: (upper[c], c: .Q.t a)!(`$"list of ",/: string b), b: key'[(a:5h$ where " " <> 20#.Q.t) $\: ()]; 
     attributeDict: `s`u`p`g!`sorted`unique`parted`grouped;
-    @[a!meta each a; a:tables[]; ?[; (); 0b; (`$("Column Names";"Data Types";"Attribute Types"))!(`c;(typeDict;`t);(attributeDict;`a))]]
-    };
+    allTabs: raze/[.util.getVarType[`a] peach .util.baseNS[]], tables[];
+    verboseMeta: ?[;();0b;(`$("Column Names";"Data Types";"Attribute Types"))!(`c;(typeDict;`t);(attributeDict;`a))]; 
+    allTabs!(verboseMeta meta ::) each allTabs
+ };
 
-// To write to an xls file with tabs for every corresponding table_name-meta combo
-.util.writeXlsTab: {[filePath] hsym[`$ ssr[`$ raze string filePath;".xls";""], ".xls"] 0: .h.edsn .util.getTabMeta[]};
+// Write metadata to xls form
+.util.writeXlsTab: {[filePath] 
+    filePath: .util.toString filePath;
+    hsym[.util.toSymbol filePath, $[filePath like "*.xls";"";".xls"]] 0: .h.edsn .util.getTabMeta[]
+ };
 
-// An example of using this function is:
-/ .util.writeXlsTab["test"] or .util.writeXlsTab[`test]
+// Parse worksheet name out
+.util.parseWSName: {first @[x ss "\"";0;+;1] _ x};
 
-// For the purpose of "reversing" the .h.edsn xls file generated above, i.e. parsing through its XML (xls) structure
+// Reversing .h.edsn xls files generated above
 .util.reverseEdsn: {
-    ws: .util.strFilt[read0 hsym `$ raze string x; "*<Worksheet *"];
-    ws_key: `$ sublist'[(first ss[;"\""]@) each b; b: raze (count[b] + ws ss\: b:"Worksheet ss:Name=\"") _' ws];
-    ws_key!.util.parseXML each ws
-    };
+    ws: raze 1_ read0 hsym .util.toSymbol x;                                                // Slice off XML version
+    index: ,'/[ws ss/: "<>"];                                                               // Find all <>
+    index[;1]+: 1;                                                                          // Account for slice indices 
+    ws: except[raze[index] _ ws; enlist ""];                                                // Parse it into a matrix structure
+    wsNames: .util.toSymbol .util.parseWSName each .util.regexFilter[ws; "<Worksheet*"];    // Get the appropriate wsNames
+    wsTabs: .util.findTags["*[</]Table>"; ws];                                              // Break ws into its separate tables
+    .util.parseXML each wsTabs
+ };
 
-.util.strFilt: {x where x like y};
+// Filter list to specific regex
+.util.regexFilter: {x where x like y};
 
-.util.genIntervs: {-1_ (1+)\[y>=;x]};
-
+// Parse into XML Structure
 .util.parseXML: {
-    b: a[.util.genIntervs .' 2 cut where (a: (-1_ 1+ x ss ">") _ x) like "*[</]Row>*"]; 
-    (count[c]#"*"; enlist csv) 0: csv 0: c: flip @[b; til count b; ssr[;"</Data>";""] each .util.strFilt[;"*</Data>"] @]
-    };
+    tabString: ("," sv .util.sliceIndex each .util.findTags["*[</]Data[ >]*"] ::) each .util.findTags["*[</]Row>"; x];
+    commaStr: (1+ count first[tabString] ss ",")#"*"; 
+    (commaStr; enlist csv) 0: tabString
+ };
     
-// An example of using this function for the above is:
-/ .util.reverseEdsn["test.xls"] or .util.reverseEdsn[`test.xls]
+// Add Double Apostrophes
+.util.addDoubApost: {"\"", x, "\""};
 
-// For purposes of parsing into HTML structure for .util.getTabMeta[] generated above
-/ Create the corresponding button tags 
-/ To ensure the attached HTML page works with the above verbose meta information, one need to turn on the -p 5014 port or change the qutils_other.html port to match the ideal websocket output
-.util.dColons: {"\"", x, "\""};
-.util.createHTMLStruct: {.h.htac[`button; `id`onclick`class!`$.util.dColons each (x; "send('.util.getTabMeta[] @ `", x, "');trigger('", x, "');"; "active"); x]};
+// Parse .util.getTabMeta[] into HTML Structure
+.util.createHTMLStruct: {.h.htac[`button; `id`onclick`class! `$ .util.addDoubApost each (x; "send('.util.getTabMeta[] @ `", x, "');trigger('", x, "');"; "active"); x]};
 
-/ .z.ws is defined for the HTML structure to properly work above in conjunction with the qutils_other.html file provided in this repo
-.z.ws: {neg[.z.w] .j.j @[value;x;`$"'",];};
-
-/ Define the css styles of the HTML document for the sample tables
+// Define CSS Styles 
 .util.defineCSSStyle: {
     .h.sa: .h.htc[`style; "table {font-family: arial, sans-serif; border-collapse: collapse; width: auto !important;}"]; 
     .h.sb: .h.htc[`style; "td, th {border: 1px solid #dddddd; text-align: left; padding: 4px;}"];
     .h.sc: .h.htc[`style; "tr:nth-child(even) {background-color: #dddddd;}"];
-    }; 
+ }; 
 
-/ Generation of each rows of HTML table
+// Generation of each HTML table rows
 .util.htc: {.h.htc[z] raze .h.htc[y] each x};
 
-/ To generate the q table in HTML format
-.util.toHTMLTab: {[tab] .h.htc[`table] {x, .util.htc["," vs y;`td;`tr]}/[.util.htc["," vs wo_head 0;`th;`tr]; 1_ wo_head:csv 0: tab]};
+// Generate table in HTML format
+.util.toHTMLTab: {[tab] 
+    woHead: csv 0: tab;
+    .h.htc[`table] {x, .util.htc["," vs y;`td;`tr]}/[.util.htc["," vs woHead 0;`th;`tr]; 1_ woHead]
+ };
 
-/ Example of using above function using .h.html to capture the above styles specified is:
-/ h: hopen `:test.html;
-/ .util.defineCSSStyle[];
-/ h .h.html .util.toHTMLTab[([] a: til 3; b: 3?`3)];
-/ hclose h;
+// .z.ws for HTML Interface   
+.z.ws: {neg[.z.w] .j.j @[value; x; `$ "'",];};
 
+// Find Specific <> Tags
+.util.findTags: {(first _[;y] ::) each .[2 cut where y like x;(::;1);+;1]};
+.util.sliceIndex: {"", first `char$ 1_ -1_ x};
+
+\ 
+Example Usage: 
+
+1) Write to xls file
+.util.writeXlsTab["test"] or .util.writeXlsTab[`test]
+
+2) Reverse xls file
+.util.reverseEdsn[`test.xls]
+
+3) Use .h.html to generate HTML file
+
+h: hopen `:test.html;
+.util.defineCSSStyle[];
+h .h.html .util.toHTMLTab[([] a: til 3; b: 3?`3)];
+hclose h;
