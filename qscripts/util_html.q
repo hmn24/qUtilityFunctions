@@ -35,7 +35,12 @@
 // Filter list to specific regex
 .util.regexFilter: {x where x like y};
 
+// Find Specific <> Tags
+.util.findTags: {(first _[;y] ::) each .[2 cut where y like x;(::;1);+;1]};
+
 // Parse into XML Structure
+.util.sliceIndex: {"", first `char$ 1_ -1_ x};
+
 .util.parseXML: {
     tabString: ("," sv .util.sliceIndex each .util.findTags["*[</]Data[ >]*"] ::) each .util.findTags["*[</]Row>"; x];
     commaStr: (1+ count first[tabString] ss ",")#"*"; 
@@ -66,10 +71,6 @@
 
 // .z.ws for HTML Interface   
 .z.ws: {neg[.z.w] .j.j @[value; x; `$ "'",];};
-
-// Find Specific <> Tags
-.util.findTags: {(first _[;y] ::) each .[2 cut where y like x;(::;1);+;1]};
-.util.sliceIndex: {"", first `char$ 1_ -1_ x};
 
 \ 
 Example Usage: 
