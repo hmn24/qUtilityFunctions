@@ -1,11 +1,11 @@
 \d .util
 
-// Function to convert strings/symbols
+// To convert strings/symbols
 toString: {$[not type x; .z.s each x; 10h = abs type x; x; string x]};
 toSymbol: {$[11h = abs type x; x; `$ toString x]};
 
 // Formatting Error Message
-formatErr: {-1 "<ERROR> ", x;()};
+formatErr: {.Q.dw "<ERROR> ", x, "\n";()};
 
 // Set default variables
 setDefault: {x set @[value; x; y]};
@@ -14,8 +14,9 @@ setDefault: {x set @[value; x; y]};
 sliceColon: {(":" = first x) _ x};
 hsymInv: {(sliceColon toString ::) each x};
 
-// Run system commands, e.g. .util.sysCmd[`f;`.a]
-sysCmd: {@[system; raze toString (x;" ";y); formatErr]};
+// Run system commands -- No args limit 
+/ E.g: [.util.sysCmd[`f;`.a] | .util.sysCmd[`f] | .util.sysCmd[`timeout;1]]  
+sysCmd: {@[system; " " sv "" ,/: toString $[1 < count x; x; first x]; formatErr]} enlist ::;
 
 // Check if its a File/Directory
 isFileDir: {$[not type keyPath: key hsym toSymbol x; `; keyPath ~ x; `file; `dir]};
@@ -25,7 +26,7 @@ isQKFile: {$[`file = isFileDir x; x like "*.[qk]"; 0b]};
 // Load a script
 loadScript: {if[(::) ~ sysCmd[`l;x]; -1 "Loaded ", x, " successfully!"]};
 
-// Load a specific directory
+// Load all q/k files within a directory (incl. subdirectories)
 loadDir: {[path]
     path: hsym toSymbol path;
     if[`dir = isFileDir path;

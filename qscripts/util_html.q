@@ -36,14 +36,14 @@
 .util.regexFilter: {x where x like y};
 
 // Find Specific <> Tags
-.util.findTags: {(first _[;y] ::) each .[2 cut where y like x;(::;1);+;1]};
+.util.findTags: {(first _[;y] ::) each .[2 cut where y like x; (::;1); +; 1]};
 
 // Parse into XML Structure
 .util.sliceIndex: {"", first `char$ 1_ -1_ x};
 
 .util.parseXML: {
     tabString: ("," sv .util.sliceIndex each .util.findTags["*[</]Data[ >]*"] ::) each .util.findTags["*[</]Row>"; x];
-    commaStr: (1+ count first[tabString] ss ",")#"*"; 
+    commaStr: (1+ count first[tabString] ss ",")# "*"; 
     (commaStr; enlist csv) 0: tabString
  };
     
@@ -51,7 +51,10 @@
 .util.addDoubApost: {"\"", x, "\""};
 
 // Parse .util.getTabMeta[] into HTML Structure
-.util.createHTMLStruct: {.h.htac[`button; `id`onclick`class! `$ .util.addDoubApost each (x; "send('.util.getTabMeta[] @ `", x, "');trigger('", x, "');"; "active"); x]};
+.util.createHTMLStruct: {
+    attribs: `id`onclick`class! `$ .util.addDoubApost each (x; "send('.util.getTabMeta[] @ `", x, "');trigger('", x, "');"; "active");
+    .h.htac[`button; attribs; x]
+ };
 
 // Define CSS Styles 
 .util.defineCSSStyle: {
@@ -82,7 +85,6 @@ Example Usage:
 .util.reverseEdsn[`test.xls]
 
 3) Use .h.html to generate HTML file
-
 h: hopen `:test.html;
 .util.defineCSSStyle[];
 h .h.html .util.toHTMLTab[([] a: til 3; b: 3?`3)];

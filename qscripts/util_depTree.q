@@ -16,7 +16,7 @@
 .util.genNSDict: {do[5; x: x, enlist raze .util.getNS peach last x]; x};
 
 // To check the namespace for specific variable types in each individual scan loop
-.util.scanVarType: {y, enlist raze .Q.dd/:'[z; .util.sysCmd[x] peach z]};
+.util.scanVarType: {y, enlist raze .Q.dd/:'[z; .util.sysCmd[x;] peach z]};
 
 // Use .util.scanVarTypes to generate a list of depth 5 for a specific variable type
 .util.getVarType: {.util.scanVarType[x]/[(); .util.genNSDict y]};
