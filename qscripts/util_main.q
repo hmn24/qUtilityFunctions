@@ -4,6 +4,21 @@
 toString: {$[not type x; .z.s each x; 10h = abs type x; x; string x]};
 toSymbol: {$[11h = abs type x; x; `$ toString x]};
 
+// General/dynamic un-enumeration function 
+unenumSyms: {
+    ty: type x;
+    $[not ty;                                   // Mixed lists
+            .z.s each x; 
+        abs[ty] in 20 21h;                      // Unenum enumerated syms
+            value x; 
+        98h = ty;                               // Tables
+            flip .z.s each .Q.V x;
+        99h = ty;                               // Dictionaries/Keyed Tables
+            $[98h = type key x; .z.s[key x]!.z.s[value test]; .z.s each x]; 
+        x                                       // Others -- Std. Recursion Base
+    ]
+ };
+
 // Formatting Error Message
 formatErr: {.Q.dw "<ERROR> ", x, "\n";()};
 
