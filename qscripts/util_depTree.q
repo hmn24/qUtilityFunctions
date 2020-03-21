@@ -10,23 +10,28 @@
 .util.chkNSDict: {(99h = type x) and (::) ~ first x};
 
 // Collate the full namespace of subsequent NS dict
-.util.getNS: {.Q.dd[x;] each where .util.chkNSDict peach value x};
+.util.getNS: {.Q.dd[x;] each where .util.chkNSDict each value x};
 
 // Generate the levels of individual namespaces, max up to 5 levels
-.util.genNSDict: {do[5; x: x, enlist raze .util.getNS peach last x]; x};
+.util.genNSDict: {do[5; x: x, enlist raze .util.getNS each last x]; x};
 
 // To check the namespace for specific variable types in each individual scan loop
-.util.scanVarType: {y, enlist raze .Q.dd/:'[z; .util.sysCmd[x;] peach z]};
+.util.scanVarType: {y, enlist raze .Q.dd/:'[z; .util.sysCmd[x;] each z]};
 
 // Use .util.scanVarTypes to generate a list of depth 5 for a specific variable type
 .util.getVarType: {.util.scanVarType[x]/[(); .util.genNSDict y]};
+
+// Generate unique dictionaries
+.util.genUniqDict: {[func;dict;iterkeys]
+    @[dict; iterkeys; union; func iterkeys]
+ };
 
 // Get all variables defined within kdb namespaces
 .util.getAllVars: {
     if[not .util.toSymbol[x] in `f`a`v;  
         '"Only `f`a`v allowed!"
     ];
-    .util.baseNS[]! (raze .util.getVarType[x] ::) peach .util.baseNS[]
+    .util.genUniqDict[raze .util.getVarType[x] ::]/[(`u#())!(); .util.baseNS[]]
  };
 
 // To ensure dictionaries keys are of equal length
@@ -36,9 +41,8 @@
 .util.makeRowDict: {flip enlist[x]!enlist (), y};
 .util.makeDepthDict: {
     tab: (uj/) .util.toSymbol[til count x] .util.makeRowDict' x;
-    .util.updTabCol[tab; y]
+    $[count tab; `Regex xcols ![tab; enlist (=;`i;0); 0b; enlist[`Regex]!enlist (), y]; tab]
  };
-.util.updTabCol: {[tab;regex] $[count tab; `Regex xcols ![tab; (); 0b; enlist[`Regex]!enlist (), regex]; tab]}
 
 // To generate all namespace dictionaries for functions/tables
 .util.getAllFns: {.util.makeEqualLength .util.getAllVars[`f]};
@@ -47,12 +51,12 @@
 // To search the function-string for particular regex match
 .util.searchRegex: {[allFns;filterStr;caseFn;regex]
     regexStr: caseFn @ raze .util.toString regex, filterStr;
-    allFns where "b"$ (count ss[;regexStr] caseFn @ string value ::) peach allFns
+    allFns where "b"$ (count ss[;regexStr] caseFn @ string value ::) each allFns
  };
 
 // Wrapper for .util.searchRegex to stack additional layers of dependencies 
 .util.searchRegexWrap: {[allFns;filterStr;caseFn;regexList]
-    regexList, enlist distinct[raze .util.searchRegex[allFns;filterStr;caseFn] peach last regexList] except union/[regexList]
+    regexList, enlist distinct[raze .util.searchRegex[allFns;filterStr;caseFn] each last regexList] except union/[regexList]
  };
 
 // Check for dependencies for regex
@@ -60,9 +64,9 @@
     allFns: raze .util.getAllVars[`f];
     caseFn: $[isCase;::;lower];
     filterStr: $[addFilter; "[(/[') ;@.]"; ""];
-    regex: .util.toSymbol @ regex;
-    output: (1_ -1_ .util.searchRegexWrap[allFns;filterStr;caseFn]/["b"$ count last ::;] ::) each (), regex;
-    uj/[.util.makeDepthDict[;regex] peach output]
+    regex: (), .util.toSymbol regex;
+    output: (1_ -1_ .util.searchRegexWrap[allFns;filterStr;caseFn]/["b"$ count last ::;] ::) each regex;
+    uj/[.util.makeDepthDict'[output;regex]]
  };
 
 \ 
