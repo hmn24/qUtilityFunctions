@@ -7,7 +7,7 @@
 .util.getTabMeta: {
     typeDict: (upper[c], c: .Q.t a)!(`$"list of ",/: string b), b: key'[(a:5h$ where " " <> 20#.Q.t) $\: ()]; 
     attributeDict: `s`u`p`g!`sorted`unique`parted`grouped;
-    allTabs: raze/[.util.getVarType[`a] peach .util.baseNS[]], tables[];
+    allTabs: .util.getAllInfo[`a];
     verboseMeta: ?[;();0b;(`$("Column Names";"Data Types";"Attribute Types"))!(`c;(typeDict;`t);(attributeDict;`a))]; 
     allTabs!(verboseMeta meta ::) each allTabs
  };

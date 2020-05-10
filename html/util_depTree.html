@@ -87,7 +87,7 @@
             <div class="innertube">
                 <input type="text" placeholder="Search.." name="search">
                 <button type="submit" onclick="search()"><i class="fa fa-search"></i></button>
-                <button id="reset" onclick="send('.util.getAllFns[]'); reset();">Reset</button>
+                <button id="reset" onclick="send('.util.getAllInfo[`f]'); reset();">Reset</button>
                 <button id="csvExportButton" onclick="exportTableToCSV('output.csv')">Export as CSV</button>
                 <p><textarea id="txtInput"></textarea></p>
                 <p id="txtOutput"; style='margin-top:-0.25%;'></p>
@@ -105,7 +105,7 @@
         connect();
 
         ws.addEventListener('open', function (event) {
-            ws.send('.util.getAllFns[]');
+            ws.send('.util.getAllInfo[`f]');
         });    
 
     </script>   
