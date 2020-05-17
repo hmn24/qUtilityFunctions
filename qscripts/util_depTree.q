@@ -86,16 +86,14 @@
 // Check for dependencies for regex - Can accept up to 3 args
 .util.genDepTree: {[options]
     
-    options: neg[3] sublist 11b, options;
+    options: 3# options, 11b;
 
-    allFns: .util.getAllKeys[`f];
-
-    addFilter: first options;
-    isCase: options 1;
-    regex: (), .util.toSymbol last options;
+    addFilter: options 1;
+    isCase: options 2;
+    regex: (), .util.toSymbol first options;
     
-    baseOp: (enlist .util.singleSearch[addFilter;isCase;] ::) each regex;
-    output: (-1_ .util.searchRegexWrap[allFns]/["b"$ count last ::;] ::) each baseOp;
+    baseOp: (enlist .util.singleSearch[;addFilter;isCase] ::) each regex;
+    output: (-1_ .util.searchRegexWrap[.util.getAllKeys `f]/["b"$ count last ::;] ::) each baseOp;
 
     uj/[.util.makeDepthDict'[output;regex]]
  
@@ -104,11 +102,11 @@
 // Single level search - can accept up to 3 args 
 .util.singleSearch: {[options]
     
-    options: neg[3] sublist 11b, options;
+    options: 3# options, 11b;
     
-    regex: (), .util.toSymbol last options;
-    caseFn: $[options 1; ::; lower];
-    filterStr: $[first options; "[(/[' @.]"; ""];
+    regex: (), .util.toSymbol first options;
+    filterStr: $[options 1; "[(/[' @.]"; ""];
+    caseFn: $[options 2; ::; lower];
 
     .util.searchRegex[.util.getAllKeys `f; filterStr; caseFn; regex]
  
@@ -129,13 +127,18 @@ Example Usage:
 .util.genDepTree "getVarType"
 
 4) Generate regex dependency tree without additional filter and case insensitive
-.util.genDepTree[0b;0b;`getVarType]
-.util.genDepTree[0b;0b;] "getVarType"
+.util.genDepTree[`getVarType;0b;0b]
+.util.genDepTree[`getVarType`sysCmd;0b;0b]
+.util.genDepTree["getVarType";0b;0b]
 
-5) Single level search without associated dependency trees
+5) Generate regex dependency trees without additional filter but case sensitivity
+.util.genDepTree[`getVarType;0b]
+
+5) Single level search without associated dependency trees, with options similar to above
 .util.singleSearch `getVarType
 .util.singleSearch "getVarType"
-.util.singleSearch[0b;0b;`getVarType]
-.util.singleSearch[0b;1b;`getVarType]
+.util.singleSearch[`getVarType;1b]
+.util.singleSearch[`getVarType;0b;0b]
+.util.singleSearch[`getVarType;0b;1b]
 
 
