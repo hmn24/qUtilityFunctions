@@ -60,11 +60,11 @@
  };
 
 // To search the function-string for particular regex match
-.util.searchRegex: {[allFns;filterStr;caseFn;regex]
+.util.searchRegex: {[allFns;filterStr;caseFn;convert;regex]
     
     regex: first regex;
 
-    keyword: last ` vs regex;
+    keyword: $[convert; last ` vs regex; regex];
     ns: ` sv 2 sublist ` vs regex;
     
     nsAllFns: $[ns in key allFns; allFns ns; ()];
@@ -80,7 +80,7 @@
 
 // Wrapper for .util.searchRegex to stack additional layers of dependencies 
 .util.searchRegexWrap: {[allFns;regexList]
-    regexList, enlist distinct[raze .util.searchRegex[allFns;"[(/[' @.]";::] each raze last regexList] except union/[regexList]
+    regexList, enlist distinct[raze .util.searchRegex[allFns;"[(/[' @.]";::;1b] each raze last regexList] except union/[regexList]
  };
 
 // Check for dependencies for regex - Can accept up to 3 args
@@ -108,7 +108,7 @@
     filterStr: $[options 1; "[(/[' @.]"; ""];
     caseFn: $[options 2; ::; lower];
 
-    .util.searchRegex[.util.getAllKeys `f; filterStr; caseFn; regex]
+    .util.searchRegex[.util.getAllKeys `f; filterStr; caseFn; 0b; regex]
  
  } enlist ::;
 
