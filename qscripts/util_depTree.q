@@ -13,7 +13,7 @@
 .util.getNS: {.Q.dd[x;] each where .util.chkNSDict each value x};
 
 // Generate the levels of individual namespaces, max up to 5 levels
-.util.genNSDict: {do[5; x: x, enlist raze .util.getNS each last x]; x};
+.util.genNSDict: {do[4; x: x, enlist $[count last x; raze .util.getNS each last x; ()]]; x};
 
 // To check the namespace for specific variable types in each individual scan loop
 .util.scanVarType: {y, enlist raze .Q.dd/:'[z; .util.sysCmd[x;] each z]};
